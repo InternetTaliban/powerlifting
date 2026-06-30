@@ -46,7 +46,7 @@ function BarbellRow({ res, unit, arrow, tag, logged }: {
         {tag && <span className="plate-round-tag">{tag}</span>}
         {logged && (
           <svg className="logged-icon" aria-label="custom-logged">
-            <use href="/assets/icons/sprite.svg#icon-wrench" />
+            <use href={`${import.meta.env.BASE_URL}assets/icons/sprite.svg#icon-wrench`} />
           </svg>
         )}
       </div>

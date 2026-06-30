@@ -100,7 +100,7 @@ export function ScheduleView() {
                 removeSlotFromDay(ex, d, location);
               }}
             >
-              <svg width="12" height="12" aria-hidden="true"><use href="/assets/icons/sprite.svg#icon-x" /></svg>
+              <svg width="12" height="12" aria-hidden="true"><use href={`${import.meta.env.BASE_URL}assets/icons/sprite.svg#icon-x`} /></svg>
             </button>
           </div>
         )}

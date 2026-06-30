@@ -45,7 +45,7 @@ function Goto({ rowId, ex }: { rowId: string; ex: string }) {
       aria-label="Show in program"
       onClick={onClick}
     >
-      <svg width="14" height="14" aria-hidden="true"><use href="/assets/icons/sprite.svg#icon-chevron-right" /></svg>
+      <svg width="14" height="14" aria-hidden="true"><use href={`${import.meta.env.BASE_URL}assets/icons/sprite.svg#icon-chevron-right`} /></svg>
     </button>
   );
 }
@@ -62,7 +62,7 @@ function Done({ id, isDone }: { id: string; isDone: boolean }) {
       title={isDone ? 'Mark incomplete' : 'Mark complete'}
       onClick={onClick}
     >
-      <svg width="13" height="13" aria-hidden="true"><use href="/assets/icons/sprite.svg#icon-check" /></svg>
+      <svg width="13" height="13" aria-hidden="true"><use href={`${import.meta.env.BASE_URL}assets/icons/sprite.svg#icon-check`} /></svg>
     </button>
   );
 }
@@ -112,7 +112,7 @@ export function WorkoutPill(props: Props) {
             onClick={onRemove}
           >
             <svg width={isAssigned ? 12 : 13} height={isAssigned ? 12 : 13} aria-hidden="true">
-              <use href={`/assets/icons/sprite.svg#${isAssigned ? 'icon-x' : 'icon-trash'}`} />
+              <use href={`${import.meta.env.BASE_URL}assets/icons/sprite.svg#${isAssigned ? 'icon-x' : 'icon-trash'}`} />
             </svg>
           </button>
         </div>
@@ -150,7 +150,7 @@ export function WorkoutPill(props: Props) {
           onClick={onRemove}
         >
           <svg width={isAssigned ? 12 : 13} height={isAssigned ? 12 : 13} aria-hidden="true">
-            <use href={`/assets/icons/sprite.svg#${isAssigned ? 'icon-x' : 'icon-trash'}`} />
+            <use href={`${import.meta.env.BASE_URL}assets/icons/sprite.svg#${isAssigned ? 'icon-x' : 'icon-trash'}`} />
           </svg>
         </button>
       </div>

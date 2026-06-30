@@ -16,7 +16,7 @@ export function Icon({ id, size = 22, className, label }: IconProps) {
       aria-hidden={label ? undefined : true}
       aria-label={label}
     >
-      <use href={`/assets/icons/sprite.svg#${id}`} />
+      <use href={`${import.meta.env.BASE_URL}assets/icons/sprite.svg#${id}`} />
     </svg>
   );
 }

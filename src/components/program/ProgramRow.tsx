@@ -27,7 +27,7 @@ export function showCompleteButton(program: string): boolean {
 function WrenchIcon() {
   return (
     <svg className="logged-icon" aria-label="custom-logged">
-      <use href="/assets/icons/sprite.svg#icon-wrench" />
+      <use href={`${import.meta.env.BASE_URL}assets/icons/sprite.svg#icon-wrench`} />
     </svg>
   );
 }
@@ -146,7 +146,7 @@ export function buildProgramRow(
             }}
           >
             <svg width="15" height="15" aria-hidden="true">
-              <use href="/assets/icons/sprite.svg#icon-chevron-right" />
+              <use href={`${import.meta.env.BASE_URL}assets/icons/sprite.svg#icon-chevron-right`} />
             </svg>
           </button>
         )}
