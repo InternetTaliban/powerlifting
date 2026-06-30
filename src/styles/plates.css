@@ -1,0 +1,240 @@
+.plate-view-subtitle {
+    font-weight: bold;
+    font-size: 1.05rem;
+    color: var(--accent);
+    margin: 0 0 6px;
+    text-transform: capitalize;
+}
+
+.plate-bar-caption {
+    color: #aaa;
+    font-size: 0.85rem;
+    margin: 0 0 14px;
+    line-height: 1.4;
+}
+
+.plate-empty-note {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.plate-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.plate-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.plate-toggle-label {
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex: none;
+}
+
+.switch input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    background: #555;
+    border-radius: 24px;
+    transition: background 0.15s ease;
+}
+
+.switch-slider::before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.15s ease;
+}
+
+.switch input:checked + .switch-slider {
+    background: var(--accent);
+}
+
+.switch input:checked + .switch-slider::before {
+    transform: translateX(20px);
+}
+
+.switch input:focus-visible + .switch-slider {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+.plate-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px 14px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.plate-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: #cfcfcf;
+}
+
+.plate-legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.plate-day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+}
+
+.plate-day-name {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    color: var(--text);
+}
+
+.plate-load-block {
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+}
+
+.plate-load-block:first-of-type {
+    border-top: none;
+    padding-top: 0;
+}
+
+.plate-load-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #8a8a8a;
+    margin-bottom: 4px;
+}
+
+.plate-stack-row {
+    margin-bottom: 14px;
+}
+
+.plate-stack-row:last-child {
+    margin-bottom: 0;
+}
+
+.plate-weight {
+    font-weight: bold;
+    font-size: 1.05rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+}
+
+.plate-round-tag {
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #8a8a8a;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.barbell {
+    display: flex;
+    align-items: center;
+    min-height: 96px;
+    margin: 8px 0 6px;
+    padding: 4px 0;
+    overflow-x: auto;
+}
+
+.barbell-shaft {
+    flex: none;
+    width: 34px;
+    height: 9px;
+    border-radius: 3px 0 0 3px;
+    background: linear-gradient(#d2d6d9, #878d93);
+}
+
+.barbell-collar {
+    flex: none;
+    width: 10px;
+    height: 22px;
+    border-radius: 2px;
+    margin-right: 3px;
+    background: linear-gradient(#9aa0a6, #6b7177);
+}
+
+.barbell-plate {
+    flex: none;
+    width: 16px;
+    margin-right: 3px;
+    border-radius: 3px;
+    background: #888;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+                inset 0 -6px 10px rgba(0, 0, 0, 0.22),
+                0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.barbell-sleeve {
+    flex: none;
+    width: 18px;
+    height: 7px;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(#bcc1c6, #7c8288);
+}
+
+.barbell-empty .barbell-sleeve {
+    margin-left: 4px;
+}
+
+.plate-side-text {
+    color: #bbb;
+    font-size: 0.85rem;
+}
+
+.week-plate-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 6px;
+    opacity: 0.85;
+}
+
+.week-plate-btn:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.08);
+}

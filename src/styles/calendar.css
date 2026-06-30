@@ -1,0 +1,403 @@
+.month-calendar-wrapper {
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 16px;
+}
+
+.month-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.month-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+}
+
+.month-cell {
+    padding: 11px 0;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--text);
+    transition: background 0.15s;
+    user-select: none;
+    border: 1px solid transparent;
+    position: relative;
+}
+
+.month-cell:hover:not(.empty) {
+    background: var(--btn-hover);
+}
+
+.month-cell.empty {
+    cursor: default;
+}
+
+.month-cell.selected-week-day {
+    background: rgba(148, 163, 184, 0.10);
+    color: #94a3b8;
+    font-weight: bold;
+    border-color: #475569;
+}
+
+.month-cell.day-has-workout {
+    background: rgba(33, 150, 243, 0.18);
+    color: #90caf9;
+    font-weight: bold;
+    border-color: rgba(33, 150, 243, 0.45);
+}
+
+.month-cell.day-all-done {
+    background: rgba(76, 175, 80, 0.20);
+    color: #81c784;
+    font-weight: bold;
+    border-color: rgba(76, 175, 80, 0.55);
+}
+
+.calendar-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.unassigned-container {
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    min-height: 80px;
+    transition: border-color 0.2s;
+}
+
+.unassigned-container.drag-over {
+    border-color: var(--blue);
+    background: rgba(33, 150, 243, 0.05);
+}
+
+.pool-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 40px;
+}
+
+.calendar-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.calendar-day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+}
+
+.calendar-day-card.drag-over {
+    border-color: var(--blue);
+}
+
+.calendar-day-card.day-has-workout {
+    border-color: rgba(33, 150, 243, 0.4);
+    background: rgba(33, 150, 243, 0.04);
+}
+
+.calendar-day-card.day-all-done {
+    border-color: rgba(76, 175, 80, 0.45);
+    background: rgba(76, 175, 80, 0.04);
+}
+
+.day-header {
+    background: var(--nav);
+    padding: 10px 14px;
+    font-weight: bold;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    pointer-events: none;
+    display: flex;
+    justify-content: space-between;
+}
+
+.day-date-sub {
+    color: var(--text-muted);
+    font-weight: normal;
+}
+
+.day-dropzone {
+    padding: 12px;
+    min-height: 56px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.workout-pill {
+    background: var(--btn);
+    color: white;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    cursor: grab;
+    user-select: none;
+    border: 1px solid #444;
+    border-left: 4px solid var(--accent);
+    transition: transform 0.1s, opacity 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.workout-pill:active {
+    cursor: grabbing;
+}
+
+.workout-pill.peak-theme {
+    border-left-color: var(--accent-peak);
+}
+
+.workout-pill.selected {
+    border: 2px solid var(--blue);
+    background: #2a2a2a;
+    transform: scale(1.02);
+}
+
+.workout-pill.week-0 { --week-color: #5c6bc0; }
+.workout-pill.week-1 { --week-color: #ab47bc; }
+.workout-pill.week-2 { --week-color: #ffa726; }
+.workout-pill.week-3 { --week-color: #26c6da; }
+.workout-pill.week-4 { --week-color: #ec407a; }
+.workout-pill.week-5 { --week-color: #66bb6a; }
+
+.workout-pill[class*="week-"] {
+    border-left-color: var(--week-color);
+}
+
+.pill-week-badge {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: 3px 5px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    background: var(--week-color, var(--accent));
+    color: #fff;
+}
+
+.workout-pill.done .pill-week-badge {
+    opacity: 0.42;
+}
+
+.workout-pill.custom-theme {
+    border-left-color: #78909c;
+}
+
+.pill-custom-badge {
+    flex-shrink: 0;
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: 3px 5px;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    background: #78909c;
+    color: #fff;
+}
+
+.workout-pill.done .pill-custom-badge {
+    opacity: 0.42;
+}
+
+.pill-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+}
+
+.workout-pill.done .pill-title {
+    text-decoration: line-through;
+    opacity: 0.42;
+}
+
+.pill-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.pill-goto-btn {
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.pill-goto-btn svg {
+    pointer-events: none;
+}
+
+.pill-goto-btn:hover {
+    background: rgba(33, 150, 243, 0.18);
+    color: var(--blue);
+}
+
+.pill-done-btn {
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    color: #555;
+    flex-shrink: 0;
+
+    pointer-events: auto;
+    position: relative;
+    z-index: 2;
+}
+
+.pill-done-btn svg {
+    pointer-events: none;
+}
+
+.pill-done-btn:hover {
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--accent);
+}
+
+.workout-pill.done .pill-done-btn {
+    background: rgba(76, 175, 80, 0.22);
+    color: var(--accent);
+}
+
+.pill-action-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    color: #aaa;
+    pointer-events: auto;
+    position: relative;
+    z-index: 2;
+}
+
+.pill-action-btn svg {
+    pointer-events: none;
+}
+
+.pill-action-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.pill-action-btn.del {
+    color: var(--accent-peak);
+}
+
+.pill-action-btn.del:hover {
+    background: rgba(244, 67, 54, 0.18);
+}
+
+.split-help {
+    color: #aaa;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0 0 16px;
+}
+
+.split-pool-wrapper {
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.split-pool-wrapper.drag-over {
+    border-color: var(--blue);
+    background: rgba(33, 150, 243, 0.05);
+}
+
+.split-section-label {
+    margin: 0 0 12px;
+    color: #aaa;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.split-empty-note {
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    margin: 0;
+}
+
+.split-rest-placeholder {
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    font-style: italic;
+    pointer-events: none;
+}
+
+.split-pill {
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .workout-pill {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .month-cell {
+        padding: 9px 0;
+        font-size: 0.88rem;
+    }
+}

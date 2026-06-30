@@ -1,0 +1,186 @@
+.fatigue-intro {
+    color: #aaa;
+    margin: 0 0 18px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.fatigue-peripheral-hint {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin: -8px 0 18px;
+}
+
+.fatigue-peripheral-hint b {
+    color: var(--blue);
+    font-variant-numeric: tabular-nums;
+}
+
+.fatigue-unmapped-note {
+    background: rgba(255, 152, 0, 0.12);
+    border: 1px solid var(--orange);
+    color: var(--orange);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    margin: 0 0 16px;
+}
+
+.fatigue-muscle-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+}
+
+.fatigue-muscle-card.zone-under   { border-left-color: var(--blue); }
+.fatigue-muscle-card.zone-optimal { border-left-color: var(--accent); }
+.fatigue-muscle-card.zone-high    { border-left-color: var(--orange); }
+.fatigue-muscle-card.zone-over    { border-left-color: var(--accent-peak); }
+.fatigue-muscle-card.zone-none    { border-left-color: #555; }
+
+.fatigue-muscle-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.fatigue-muscle-head h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text);
+}
+
+.fatigue-muscle-head-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fatigue-sets {
+    font-weight: bold;
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+    color: #ddd;
+}
+
+.fatigue-badge {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.fatigue-badge.zone-under   { background: rgba(33, 150, 243, 0.18);  color: #6fb8f7; }
+.fatigue-badge.zone-optimal { background: rgba(76, 175, 80, 0.18);   color: #7ed982; }
+.fatigue-badge.zone-high    { background: rgba(255, 152, 0, 0.18);   color: #ffb74d; }
+.fatigue-badge.zone-over    { background: rgba(244, 67, 54, 0.18);   color: #ef8278; }
+.fatigue-badge.zone-none    { background: rgba(255, 255, 255, 0.07); color: var(--text-muted); }
+
+.fatigue-bar-track {
+    position: relative;
+    height: 12px;
+    background: var(--btn);
+    border-radius: 6px;
+    margin: 12px 0 10px;
+    overflow: hidden;
+}
+
+.fatigue-bar-fill {
+    height: 100%;
+    border-radius: 6px 0 0 6px;
+    transition: width 0.25s ease;
+}
+
+.fatigue-bar-fill.zone-under   { background: var(--blue); }
+.fatigue-bar-fill.zone-optimal { background: var(--accent); }
+.fatigue-bar-fill.zone-high    { background: var(--orange); }
+.fatigue-bar-fill.zone-over    { background: var(--accent-peak); }
+.fatigue-bar-fill.zone-none    { background: #555; }
+
+.fatigue-marker {
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    width: 2px;
+    transform: translateX(-1px);
+}
+
+.fatigue-marker-mev { background: rgba(255, 255, 255, 0.55); }
+.fatigue-marker-mrv { background: rgba(244, 67, 54, 0.85); }
+
+.fatigue-contributors {
+    margin: 0 0 12px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.fatigue-tol-row {
+    display: flex;
+    gap: 12px;
+}
+
+.fatigue-tol-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.fatigue-tol-field input {
+    width: 64px;
+    padding: 6px 8px;
+}
+
+.fatigue-controls {
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.fatigue-settings-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0;
+}
+
+.fatigue-settings-field input {
+    width: 90px;
+}
+
+.fatigue-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin: 0 0 18px;
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.fatigue-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fatigue-legend i {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.fatigue-legend i.zone-under   { background: var(--blue); }
+.fatigue-legend i.zone-optimal { background: var(--accent); }
+.fatigue-legend i.zone-high    { background: var(--orange); }
+.fatigue-legend i.zone-over    { background: var(--accent-peak); }

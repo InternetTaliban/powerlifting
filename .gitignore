@@ -1,0 +1,33 @@
+# local dev server (not part of the build)
+run.py
+
+# build output
+dist/
+
+# dependencies — committed package-lock.json drives `npm ci` in CI
+node_modules/
+
+# --- Local / private — must never be published (hardened before going public) ---
+
+# Claude Code local config, worktrees, and any context/markdown files it writes.
+# (Claude's persistent memory lives under ~/.claude, OUTSIDE this repo, so it was
+#  never committable here — these entries just guarantee nothing slips in.)
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+
+# Session / transcript dumps occasionally written to the repo root,
+# e.g. 2026-06-20-102837-for-every-task-...txt
+20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.txt
+
+# Personal app-state exports (Settings → Data → Export) — your training data
+benchapp-*.json
+# UUID-named state exports, e.g. 87a07e3c-....json
+????????-????-????-????-????????????.json
+
+# Stray editor / extension packages
+*.vsix
+
+# Internal docs — kept out of the public mirror (only README is published)
+HOSTING.md
+TECHNICAL.md
