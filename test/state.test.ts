@@ -14,6 +14,7 @@ test('normalizeState: backfills a full schema from an empty object', () => {
   assert.equal(s.global.rounding, 'exact');
   assert.equal(s.global.navPosition, 'top');
   assert.equal(s.global.backPosition, 'bottom');
+  assert.equal(s.global.alwaysShowBack, false);
   assert.equal(s.global.dialogOffset, 65);
   assert.equal(s.global.roughLoads, false);
   assert.equal(s.global.showLoadsToggle, false);
@@ -64,6 +65,7 @@ test('defaultState: ships the coach default program and design', () => {
   assert.equal(d.global.controls.layout.adjust, 'hidden');
   assert.equal(d.global.controls.layout.loads, 'hidden');
   assert.equal(d.global.backPosition, 'bottom');
+  assert.equal(d.global.alwaysShowBack, false);
 });
 
 test('normalizeState: defaults roughLoads off but preserves an explicit choice', () => {
@@ -76,6 +78,16 @@ test('normalizeState: defaults roughLoads off but preserves an explicit choice',
   assert.equal(on.global.roughLoads, true);
 });
 
+test('normalizeState: defaults alwaysShowBack off but preserves an explicit choice', () => {
+  const off: any = {};
+  normalizeState(off);
+  assert.equal(off.global.alwaysShowBack, false);
+
+  const on: any = { global: { alwaysShowBack: true } };
+  normalizeState(on);
+  assert.equal(on.global.alwaysShowBack, true);
+});
+
 test('normalizeState: strips programs invalid for the exercise type', () => {
   const s: any = {
     exercises: ['bench'],
@@ -84,6 +96,63 @@ test('normalizeState: strips programs invalid for the exercise type', () => {
   };
   normalizeState(s);
   assert.deepEqual(plain(s.allowedPrograms.bench), ['building', 'peaking']);
+});
+
+test('normalizeState: keeps custom program keys in allowedPrograms', () => {
+  const s: any = {
+    exercises: ['bench'],
+    lifts: { bench: { program: 'cpx1', variation: 0, block: 0 } },
+    allowedPrograms: { bench: ['building', 'cpx1', 'pullup_double'] },
+    customPrograms: {
+      cpx1: {
+        name: 'Custom', style: 'build', progressable: true,
+        weeks: [{ week: '1', days: [{ name: 'D1', sets: 5, reps: 5, pct: 0.7 }] }],
+      },
+    },
+  };
+  normalizeState(s);
+  assert.deepEqual(plain(s.allowedPrograms.bench), ['building', 'cpx1']);
+  assert.equal(s.lifts.bench.program, 'cpx1');
+});
+
+test('normalizeState: drops malformed custom programs', () => {
+  const s: any = {
+    exercises: ['bench'],
+    lifts: { bench: { program: 'building', variation: 0, block: 0 } },
+    customPrograms: {
+      good: {
+        name: 'Good', style: 'peak', progressable: false,
+        weeks: [{ week: '1', days: [{ name: 'D', sets: 3, reps: 3, pct: 0.8 }] }],
+      },
+      noName: { name: '', style: 'build', progressable: true, weeks: [{ week: '1', days: [{ name: 'D' }] }] },
+      noWeeks: { name: 'X', style: 'build', progressable: true, weeks: [] },
+      junk: 5,
+    },
+  };
+  normalizeState(s);
+  assert.deepEqual(Object.keys(s.customPrograms), ['good']);
+});
+
+test('normalizeState: prunes variation muscle maps with bad indexes, muscles, or exercises', () => {
+  const s: any = {
+    exercises: ['bench'],
+    lifts: { bench: { program: 'building', variation: 0, block: 0 } },
+    variationsDict: { bench: ['Main', 'Close Grip'] },
+    fatigue: {
+      peripheralFactor: 0.5, week: 0, muscleMap: {}, tolerance: {},
+      variationMuscleMap: {
+        bench: {
+          1: { primary: ['triceps', 'notamuscle'], secondary: ['chest'] },
+          5: { primary: ['chest'], secondary: [] },
+        },
+        ghost: { 0: { primary: ['chest'], secondary: [] } },
+      },
+    },
+  };
+  normalizeState(s);
+  assert.deepEqual(plain(s.fatigue.variationMuscleMap.bench[1]), { primary: ['triceps'], secondary: ['chest'] });
+  assert.equal(s.fatigue.variationMuscleMap.bench[5], undefined);
+  assert.equal(s.fatigue.variationMuscleMap.ghost, undefined);
 });
 
 test('normalizeState: a pullup keeps only pullup programs', () => {

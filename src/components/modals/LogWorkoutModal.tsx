@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useStore } from '../../store/store';
 import { Modal, CloseButton } from '../common/Modal';
 import { closeModal, saveLogWorkout } from '../../store/actions';
-import { programs } from '../../lib/data';
+import { getProgram } from '../../lib/programLookup';
 import { formatDate } from '../../util/date';
 import { buildProgramRow } from '../program/ProgramRow';
 
@@ -21,7 +21,7 @@ export function LogWorkoutModal({ context = 'planner', date, markDone }: Props) 
   const [done, setDone] = useState(markDone != null ? markDone : context === 'backlog');
 
   const prog = state.lifts[ex]?.program;
-  const weeks = prog ? programs[prog] || [] : [];
+  const weeks = prog ? getProgram(prog) || [] : [];
   const weekData = weeks[w];
   const trainingDays = (weekData?.days || []).map((day, idx) => ({ day, idx })).filter(({ day }) => !day.isRest);
 

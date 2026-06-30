@@ -15,7 +15,7 @@ import { PlatesView } from './components/views/PlatesView';
 import { SettingsView } from './components/views/SettingsView';
 import { RpeGuideView } from './components/views/RpeGuideView';
 import { PoBoxView } from './components/views/PoBoxView';
-import { cycleUnit, cycleRounding } from './store/actions';
+import { cycleUnit, cycleRounding, setActiveView } from './store/actions';
 import { roundingDict } from './lib/data';
 import type { ViewId } from './lib/types';
 
@@ -42,6 +42,7 @@ export default function App() {
     document.body.classList.toggle('back-bottom', state.global.backPosition === 'bottom');
     const anyBottom = state.global.nav.order.some((k) => state.global.nav.layout[k] === 'bottom');
     document.body.classList.toggle('nav-bottom', anyBottom);
+    document.body.classList.toggle('back-always', state.global.alwaysShowBack);
   });
 
   useEffect(() => {
@@ -53,6 +54,11 @@ export default function App() {
       <main id="mainView" className={'view' + (activeView === 'mainView' ? ' active' : '')}>
         <header className="header">
           <div className="header-left">
+            {state.global.alwaysShowBack && (
+              <button className="nav-btn back-btn" type="button" onClick={() => setActiveView('mainView')}>
+                &lt; Back
+              </button>
+            )}
             <h2>Powerlifting Hub</h2>
           </div>
           <div className="header-right">

@@ -1,5 +1,6 @@
 import { state, saveState } from './state';
-import { programs, autoAssignMap, DAYS_PER_WEEK } from './data';
+import { autoAssignMap, DAYS_PER_WEEK } from './data';
+import { getProgram } from './programLookup';
 import type { SplitSlot } from './types';
 
 export const slotKey = (ex: string, day: number): string => `${ex}:${day}`;
@@ -15,7 +16,7 @@ export function getAllSplitSlots(): NamedSlot[] {
 
   for (const ex of state.exercises) {
     const program = state.lifts[ex] && state.lifts[ex].program;
-    const firstWeek = programs[program] && programs[program][0];
+    const firstWeek = getProgram(program)?.[0];
     if (!firstWeek) {
       continue;
     }
@@ -38,7 +39,7 @@ export function buildDefaultMasterSplit(): Record<number, SplitSlot[]> {
 
   for (const ex of state.exercises) {
     const program = state.lifts[ex] && state.lifts[ex].program;
-    const firstWeek = programs[program] && programs[program][0];
+    const firstWeek = getProgram(program)?.[0];
     if (!firstWeek) {
       continue;
     }

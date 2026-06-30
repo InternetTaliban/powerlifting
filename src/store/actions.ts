@@ -3,11 +3,12 @@ import { commit, touch, ui } from './store';
 import type { ModalType } from './store';
 import { convertMaxGymMath, rowIdBlock, makeRowId } from '../lib/calc';
 import {
-  roundingList, regularPrograms, pullupPrograms, programs, defaultTolerance,
+  roundingList, regularPrograms, pullupPrograms, defaultTolerance, defaultState,
   defaultNavConfig, defaultControlsConfig, NAV_KEYS,
   DEFAULT_INCREMENT, NEW_EXERCISE_DEFAULT_MAX, BLOCK_WEEKS, DAYS_PER_WEEK,
   DEFAULT_DIALOG_OFFSET, THUMB_REACH_DIALOG_OFFSET, DIALOG_OFFSET_MIN, DIALOG_OFFSET_MAX,
 } from '../lib/data';
+import { getProgram, customProgramKeys } from '../lib/programLookup';
 import { NAV_ITEMS } from '../lib/nav';
 import { ensureFatigueState } from '../lib/fatigue';
 import { ensureWarmupState } from '../lib/warmup';
@@ -16,7 +17,7 @@ import { weekIndexFromRowId } from '../lib/rowId';
 import { snappyScrollTo } from '../util/scroll';
 import { formatDate, formatDisplayDate } from '../util/date';
 import type {
-  ControlLocation, ImportIssue, NavFabs, NavKey, NavLocation, NormalizeReport,
+  ControlLocation, CustomProgram, ImportIssue, MuscleMapEntry, NavFabs, NavKey, NavLocation, NormalizeReport,
   RepModifiers, RevealControl, State, Unit, ViewId,
 } from '../lib/types';
 
@@ -229,6 +230,154 @@ export function selectVariation(idx: number): void {
   closeModal();
 }
 
+export function addProgramToLift(progKey: string): void {
+  const state = getState();
+  const ex = state.activeLift;
+  const allowed = state.allowedPrograms[ex] || (state.allowedPrograms[ex] = []);
+  if (!allowed.includes(progKey)) {
+    allowed.push(progKey);
+  }
+
+  state.lifts[ex].program = progKey;
+  commit();
+  closeModal();
+}
+
+function genProgramKey(): string {
+  return 'cp' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+export function saveCustomProgram(program: CustomProgram, editKey?: string): boolean {
+  const name = program.name.trim();
+  if (!name) {
+    showAlert('Give the program a name first.');
+    return false;
+  }
+
+  const weeks = program.weeks || [];
+  const hasTrainingDay = weeks.some((week) => (week.days || []).some((day) => !day.isRest));
+  if (weeks.length === 0 || !hasTrainingDay) {
+    showAlert('Add at least one training day.');
+    return false;
+  }
+
+  const state = getState();
+  if (!state.customPrograms) {
+    state.customPrograms = {};
+  }
+
+  const key = editKey || genProgramKey();
+  state.customPrograms[key] = { ...program, name };
+
+  if (!editKey) {
+    const ex = state.activeLift;
+    const allowed = state.allowedPrograms[ex] || (state.allowedPrograms[ex] = []);
+    if (!allowed.includes(key)) {
+      allowed.push(key);
+    }
+    state.lifts[ex].program = key;
+  }
+
+  commit();
+  closeAllModals();
+  showToast(editKey ? 'Program updated.' : 'Custom program added.');
+  return true;
+}
+
+export function deleteCustomProgram(key: string): void {
+  const name = getState().customPrograms?.[key]?.name || 'this program';
+  showConfirm(
+    `Delete custom program “${name}”? Any planned or logged workouts that use it will be removed. This cannot be undone.`,
+    () => {
+      const state = getState();
+
+      for (const ex of Object.keys(state.lifts)) {
+        let allowed = (state.allowedPrograms[ex] || []).filter((prog) => prog !== key);
+        if (allowed.length === 0) {
+          allowed = ex === 'pullup' ? [pullupPrograms[0]] : [regularPrograms[0]];
+        }
+        state.allowedPrograms[ex] = allowed;
+        if (!allowed.includes(state.lifts[ex].program)) {
+          state.lifts[ex].program = allowed[0];
+        }
+      }
+
+      const removeRows = (map: Record<string, unknown>) => {
+        for (const rowId of Object.keys(map)) {
+          if (rowId.includes(`-${key}-w`)) {
+            delete map[rowId];
+          }
+        }
+      };
+      removeRows(state.calendar);
+      removeRows(state.completed);
+      removeRows(state.logged || {});
+      removeRows(state.loggedMax || {});
+
+      delete state.customPrograms[key];
+      commit();
+      showToast('Custom program deleted.');
+    },
+    true,
+  );
+}
+
+export function addVariationToLift(rawName: string, muscleMap?: MuscleMapEntry): boolean {
+  const state = getState();
+  const ex = state.activeLift;
+  const name = rawName.trim();
+  if (!name) {
+    showAlert('Please enter a variation name.');
+    return false;
+  }
+
+  const names = state.variationsDict[ex] || (state.variationsDict[ex] = []);
+  // Reuse a same-named variation (re-enabling it if hidden) instead of adding a duplicate.
+  let idx = names.findIndex((existing) => existing.toLowerCase() === name.toLowerCase());
+  if (idx === -1) {
+    names.push(name);
+    idx = names.length - 1;
+  }
+
+  const allowed = state.allowedVariations[ex] || (state.allowedVariations[ex] = []);
+  if (!allowed.includes(idx)) {
+    allowed.push(idx);
+    allowed.sort((a, b) => a - b);
+  }
+
+  if (muscleMap && (muscleMap.primary.length > 0 || muscleMap.secondary.length > 0)) {
+    ensureFatigueState();
+    const perEx = state.fatigue.variationMuscleMap![ex] || (state.fatigue.variationMuscleMap![ex] = {});
+    perEx[idx] = { primary: [...muscleMap.primary], secondary: [...muscleMap.secondary] };
+  }
+
+  state.lifts[ex].variation = idx;
+  commit();
+  closeModal();
+  return true;
+}
+
+export function setVariationMuscle(
+  ex: string, varIdx: number, muscle: string, role: 'primary' | 'secondary', enabled: boolean,
+): void {
+  ensureFatigueState();
+  const state = getState();
+  const perEx = state.fatigue.variationMuscleMap![ex] || (state.fatigue.variationMuscleMap![ex] = {});
+  const map = perEx[varIdx] || (perEx[varIdx] = { primary: [], secondary: [] });
+  const other = role === 'primary' ? 'secondary' : 'primary';
+
+  if (!enabled) {
+    map[role] = map[role].filter((name) => name !== muscle);
+  } else {
+    if (!map[role].includes(muscle)) {
+      map[role].push(muscle);
+    }
+    map[other] = map[other].filter((name) => name !== muscle);
+  }
+
+  commit();
+}
+
 export function setRepModifier(range: keyof RepModifiers, value: number): void {
   const state = getState();
   const lift = state.lifts[state.activeLift];
@@ -271,6 +420,12 @@ export function progressCycle(): void {
 export function toggleBackPosition(): void {
   const state = getState();
   state.global.backPosition = state.global.backPosition === 'bottom' ? 'top' : 'bottom';
+  commit();
+}
+
+export function toggleAlwaysShowBack(): void {
+  const state = getState();
+  state.global.alwaysShowBack = !state.global.alwaysShowBack;
   commit();
 }
 
@@ -483,6 +638,23 @@ function clearAllStoredState(): void {
   location.reload();
 }
 
+function applySettingsReset(): void {
+  const state = getState();
+  // Reset the settings (global config) only; preserve unit so the stored 1RMs
+  // keep their meaning, and leave lifts, programs, planner and the rest untouched.
+  const unit = state.global.unit;
+  state.global = JSON.parse(JSON.stringify(defaultState.global));
+  state.global.unit = unit;
+  commit();
+}
+
+export function resetSettings(): void {
+  showConfirm(
+    'Reset all settings to defaults? Your 1RMs, programs, and weekly planner are kept.',
+    applySettingsReset,
+  );
+}
+
 export function factoryReset(): void {
   showConfirm(
     'Factory reset? This permanently erases everything — your lifts, 1RMs, logged weights, PRs, planner, and all settings — and restores the app to a fresh install. This cannot be undone.',
@@ -588,7 +760,7 @@ function assignSplitDay(state: State, weekStart: Date, weekIdx: number, weekday:
       continue;
     }
 
-    const targetWeek = programs[activeData.program] && programs[activeData.program][weekIdx];
+    const targetWeek = getProgram(activeData.program)?.[weekIdx];
     const dayObj = targetWeek && targetWeek.days[slot.d];
     if (!dayObj || dayObj.isRest) {
       continue;
@@ -695,6 +867,9 @@ function removeExercise(ex: string): void {
   if (state.fatigue?.muscleMap) {
     delete state.fatigue.muscleMap[ex];
   }
+  if (state.fatigue?.variationMuscleMap) {
+    delete state.fatigue.variationMuscleMap[ex];
+  }
 
   for (const key of Object.keys(state.completed)) {
     if (key.startsWith(`${ex}-`)) {
@@ -770,6 +945,10 @@ function renameExercise(state: State, oldName: string, newName: string, variatio
     state.fatigue.muscleMap[newName] = state.fatigue.muscleMap[oldName] || { primary: [], secondary: [] };
     delete state.fatigue.muscleMap[oldName];
   }
+  if (state.fatigue?.variationMuscleMap?.[oldName]) {
+    state.fatigue.variationMuscleMap[newName] = state.fatigue.variationMuscleMap[oldName];
+    delete state.fatigue.variationMuscleMap[oldName];
+  }
 
   renameExerciseKeys(state.completed, oldName, newName);
   renameExerciseKeys(state.calendar, oldName, newName);
@@ -807,6 +986,16 @@ export function saveEditExercise(oldName: string, rawName: string, rawVars: stri
     state.lifts[newName].variation = 0;
   }
 
+  const variationMuscles = state.fatigue?.variationMuscleMap?.[newName];
+  if (variationMuscles) {
+    for (const key of Object.keys(variationMuscles)) {
+      const num = Number(key);
+      if (num >= variations.length) {
+        delete variationMuscles[num];
+      }
+    }
+  }
+
   closeModal();
   switchLift(state.activeLift);
   return true;
@@ -826,7 +1015,7 @@ export function updateIncrement(ex: string, val: string): void {
 
 export function toggleProgramAccess(ex: string, program: string, enabled: boolean): void {
   const state = getState();
-  const validPool = ex === 'pullup' ? pullupPrograms : regularPrograms;
+  const validPool = [...(ex === 'pullup' ? pullupPrograms : regularPrograms), ...customProgramKeys()];
   let allowed = state.allowedPrograms[ex];
 
   if (enabled && !allowed.includes(program)) {
@@ -959,7 +1148,7 @@ export function saveLogWorkout(args: {
     return false;
   }
 
-  const weekData = programs[prog]?.[week];
+  const weekData = getProgram(prog)?.[week];
   const dayObj = weekData && weekData.days[day];
   if (!dayObj || dayObj.isRest) {
     showAlert('That day is a rest day — pick a training day.');

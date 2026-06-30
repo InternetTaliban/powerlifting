@@ -1,6 +1,19 @@
 import type { Unit, WarmupPref } from '../types';
 
-export const ACCEPTING_IDEAS = false;
+export const ACCEPTING_IDEAS = true;
+
+// PO Box email delivery via EmailJS (client-side; these IDs are public by design,
+// safe to ship in a static frontend). Replace the EXAMPLE values with your own
+// from https://dashboard.emailjs.com — the destination address is set in the
+// EmailJS *template*, not here. See src/lib/poBox.ts and TECHNICAL.md.
+export const POBOX_EMAILJS = {
+  serviceId: 'service_example01',
+  templateId: 'template_example01',
+  publicKey: 'ExamplePublicKey000000',
+};
+
+// One idea per device per this many hours (checked against real network time).
+export const POBOX_RATE_LIMIT_HOURS = 24;
 
 export const ROUNDING_STEP: Record<Unit, number> = { kg: 2.5, lbs: 5 };
 

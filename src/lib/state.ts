@@ -162,6 +162,7 @@ export function normalizeState(draft: any, report?: NormalizeReport): boolean {
   let loggedDropped = 0;
   let loggedMaxDropped = 0;
   let customWorkoutsDropped = 0;
+  let customProgramsDropped = 0;
 
   if (absent(draft.global)) {
     draft.global = JSON.parse(JSON.stringify(defaultState.global));
@@ -222,6 +223,38 @@ export function normalizeState(draft: any, report?: NormalizeReport): boolean {
     draft.allowedPrograms = JSON.parse(JSON.stringify(defaultState.allowedPrograms));
     bad('Allowed programs');
     dirty = true;
+  }
+
+  if (absent(draft.customPrograms)) {
+    draft.customPrograms = {};
+    fill('Custom programs');
+    dirty = true;
+  } else if (typeof draft.customPrograms !== 'object') {
+    draft.customPrograms = {};
+    bad('Custom programs');
+    dirty = true;
+  }
+
+  for (const key of Object.keys(draft.customPrograms)) {
+    const cp = draft.customPrograms[key];
+    const hasWeek = cp && typeof cp === 'object' && Array.isArray(cp.weeks)
+      && cp.weeks.some((w: any) => w && typeof w === 'object' && Array.isArray(w.days) && w.days.length > 0);
+    if (!hasWeek || typeof cp.name !== 'string' || cp.name.trim() === '') {
+      delete draft.customPrograms[key];
+      customProgramsDropped++;
+      dirty = true;
+      continue;
+    }
+
+    cp.weeks = cp.weeks.filter((w: any) => w && typeof w === 'object' && Array.isArray(w.days) && w.days.length > 0);
+    if (cp.style !== 'build' && cp.style !== 'peak') {
+      cp.style = 'build';
+      dirty = true;
+    }
+    if (typeof cp.progressable !== 'boolean') {
+      cp.progressable = cp.style === 'build';
+      dirty = true;
+    }
   }
 
   if (absent(draft.lifts)) {
@@ -362,6 +395,7 @@ export function normalizeState(draft: any, report?: NormalizeReport): boolean {
     'Back button position',
     coerceEnum(draft.global, 'backPosition', ['top', 'bottom'], draft.global.navPosition === 'bottom' ? 'bottom' : 'top'),
   );
+  applyFix('Always show back button', coerceBool(draft.global, 'alwaysShowBack', false));
   applyFix(
     'Prompt position',
     coerceNumber(draft.global, 'dialogOffset', DIALOG_OFFSET_MIN, DIALOG_OFFSET_MAX, DEFAULT_DIALOG_OFFSET),
@@ -656,7 +690,8 @@ export function normalizeState(draft: any, report?: NormalizeReport): boolean {
       dirty = true;
     }
 
-    const validPool = lift === 'pullup' ? pullupPrograms : regularPrograms;
+    const customKeys = Object.keys(draft.customPrograms || {});
+    const validPool = lift === 'pullup' ? [...pullupPrograms, ...customKeys] : [...regularPrograms, ...customKeys];
     if (absent(draft.allowedPrograms[lift])) {
       draft.allowedPrograms[lift] = [...validPool];
       fill(`${label} → allowed programs`);
@@ -774,6 +809,35 @@ export function normalizeState(draft: any, report?: NormalizeReport): boolean {
     }
   }
 
+  if (draft.fatigue.variationMuscleMap && typeof draft.fatigue.variationMuscleMap === 'object') {
+    for (const ex of Object.keys(draft.fatigue.variationMuscleMap)) {
+      const perEx = draft.fatigue.variationMuscleMap[ex];
+      if (!perEx || typeof perEx !== 'object' || !draft.exercises.includes(ex)) {
+        delete draft.fatigue.variationMuscleMap[ex];
+        dirty = true;
+        continue;
+      }
+
+      const variationCount = (draft.variationsDict[ex] || []).length;
+      for (const idxKey of Object.keys(perEx)) {
+        const idx = Number(idxKey);
+        const map = perEx[idxKey];
+        if (!Number.isInteger(idx) || idx < 0 || idx >= variationCount || !map || typeof map !== 'object') {
+          delete perEx[idxKey];
+          dirty = true;
+          continue;
+        }
+
+        map.primary = Array.isArray(map.primary) ? map.primary.filter((m: unknown) => muscleGroups.includes(m as string)) : [];
+        map.secondary = Array.isArray(map.secondary)
+          ? map.secondary.filter((m: unknown) => muscleGroups.includes(m as string)) : [];
+      }
+    }
+  } else if (!absent(draft.fatigue.variationMuscleMap)) {
+    delete draft.fatigue.variationMuscleMap;
+    dirty = true;
+  }
+
   if (absent(draft.warmup)) {
     draft.warmup = {};
     fill('Warm-up');
@@ -838,6 +902,9 @@ export function normalizeState(draft: any, report?: NormalizeReport): boolean {
   }
   if (customWorkoutsDropped > 0) {
     bad(`Custom workouts (${customWorkoutsDropped} invalid ${customWorkoutsDropped === 1 ? 'entry' : 'entries'} removed)`);
+  }
+  if (customProgramsDropped > 0) {
+    bad(`Custom programs (${customProgramsDropped} invalid ${customProgramsDropped === 1 ? 'entry' : 'entries'} removed)`);
   }
 
   return dirty;

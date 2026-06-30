@@ -1,6 +1,8 @@
 import { test } from 'vitest';
 import assert from 'node:assert/strict';
-import { platesPerSide, platesRounded, effectiveDenoms, plateHeight, formatPlateNum } from '../src/lib/plates';
+import {
+  platesPerSide, platesRounded, effectiveDenoms, plateHeight, plateWidth, formatPlateNum,
+} from '../src/lib/plates';
 import { plain } from './helpers';
 
 test('effectiveDenoms: 25 kg plate is included by default', () => {
@@ -81,11 +83,37 @@ test('platesRounded: below the bar is treated as exact (nothing to round)', () =
   assert.equal(r.down.loadable, false);
 });
 
-test('plateHeight: scales monotonically with plate weight (no numbers needed)', () => {
+test('plateHeight: per-denomination ratio of the max height', () => {
   assert.equal(plateHeight(25, 'kg'), 88);
-  assert.equal(plateHeight(1.25, 'kg'), 36);
-  assert.ok(plateHeight(25, 'kg') > plateHeight(10, 'kg'));
-  assert.ok(plateHeight(10, 'kg') > plateHeight(1.25, 'kg'));
+  assert.equal(plateHeight(20, 'kg'), 88);
+  assert.equal(plateHeight(15, 'kg'), 78);
+  assert.equal(plateHeight(10, 'kg'), 63);
+  assert.equal(plateHeight(5, 'kg'), 45);
+  assert.equal(plateHeight(2.5, 'kg'), 37);
+  assert.equal(plateHeight(1.25, 'kg'), 32);
+});
+
+test('plateHeight: lbs maps the ratios by rank (the two biggest at full height)', () => {
+  assert.equal(plateHeight(45, 'lbs'), 88);
+  assert.equal(plateHeight(35, 'lbs'), 88);
+  assert.equal(plateHeight(25, 'lbs'), 78);
+  assert.equal(plateHeight(2.5, 'lbs'), 37);
+});
+
+test('plateWidth: 25 kg at full width, the rest a tuned fraction', () => {
+  assert.equal(plateWidth(25), 16);
+  assert.equal(plateWidth(20), 13.76);
+  assert.equal(plateWidth(15), 10.72);
+  assert.equal(plateWidth(10), 9.6);
+  assert.equal(plateWidth(5), 7.2);
+  assert.equal(plateWidth(2.5), 5.28);
+  assert.equal(plateWidth(1.25), 4.96);
+});
+
+test('plateWidth: keyed by denomination value, so big lbs plates stay full width', () => {
+  assert.equal(plateWidth(45), 16);
+  assert.equal(plateWidth(35), 16);
+  assert.equal(plateWidth(10), 9.6);
 });
 
 test('formatPlateNum: trims trailing zeros', () => {

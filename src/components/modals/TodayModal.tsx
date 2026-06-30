@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useStore } from '../../store/store';
 import { Modal, CloseButton } from '../common/Modal';
 import { closeModal, openModal, goToProgramRow, toggleRowComplete } from '../../store/actions';
-import { weekDays, programs } from '../../lib/data';
+import { weekDays } from '../../lib/data';
+import { getProgram } from '../../lib/programLookup';
 import { formatDate, formatDisplayDate } from '../../util/date';
 import { parseRowId } from '../../lib/rowId';
 import { makeRowId } from '../../lib/calc';
@@ -200,7 +201,7 @@ export function TodayModal() {
       let maxWeeks = 0;
       for (const s of slots) {
         const prog = state.lifts[s.ex]?.program;
-        const len = (programs[prog] || []).length;
+        const len = (getProgram(prog) || []).length;
         if (len > maxWeeks) {
           maxWeeks = len;
         }

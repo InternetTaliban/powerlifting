@@ -1,7 +1,6 @@
 import { state } from './state';
-import {
-  programs, ROUNDING_STEP, WARMUP_START_PCT_MIN, WARMUP_START_PCT_MAX,
-} from './data';
+import { ROUNDING_STEP, WARMUP_START_PCT_MIN, WARMUP_START_PCT_MAX } from './data';
+import { getProgram } from './programLookup';
 import { BAR_WEIGHT } from './plates';
 import type { Lift, Unit } from './types';
 
@@ -100,7 +99,7 @@ export function topWorkingPct(lift: string): number {
     return 0;
   }
 
-  const program = programs[liftData.program];
+  const program = getProgram(liftData.program);
   if (!program) {
     return 0;
   }

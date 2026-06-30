@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { state } from '../../lib/state';
 import { Modal, CloseButton } from '../common/Modal';
 import { closeModal, saveLoggedWeight, resetLoggedWeight } from '../../store/actions';
-import { programs } from '../../lib/data';
+import { getProgram } from '../../lib/programLookup';
 import { getRepModifier } from '../../lib/calc';
 
 interface Props { rowId: string; lift: string; program: string; w: number; d: number; }
@@ -10,7 +10,7 @@ interface Props { rowId: string; lift: string; program: string; w: number; d: nu
 interface Entry { key: string; label: string; down: number; up: number; }
 
 export function LogWeightModal({ rowId, lift, program, w, d }: Props) {
-  const day = programs[program][w].days[d];
+  const day = getProgram(program)![w].days[d];
   const max = state.lifts[lift].max;
   const unit = state.global.unit;
   const step = unit === 'kg' ? 2.5 : 5;

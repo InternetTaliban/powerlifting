@@ -64,6 +64,17 @@
     background: var(--btn-hover);
 }
 
+.nav-btn--danger {
+    background: transparent;
+    border-color: var(--accent-peak);
+    color: var(--accent-peak);
+}
+
+.nav-btn--danger:hover {
+    background: rgba(244, 67, 54, 0.18);
+    color: #ff6659;
+}
+
 .cycle-btn {
     padding: 10px 14px;
     border-radius: 8px;
@@ -323,6 +334,462 @@ html:has(dialog[open]) {
     font-weight: bold;
 }
 
+.picker-opt:not(.picker-opt--add) .picker-opt-label {
+    flex: 1 1 auto;
+}
+
+.picker-opt-hide {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    color: #888;
+    padding: 2px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.picker-opt-hide:hover {
+    color: var(--accent-peak);
+    background: rgba(244, 67, 54, 0.12);
+}
+
+.picker-opt--add {
+    justify-content: center;
+    border-style: dashed;
+    background: transparent;
+    color: var(--accent);
+}
+
+.picker-opt--add:hover {
+    background: var(--btn);
+    color: var(--accent);
+}
+
+.picker-opt-add-icon {
+    font-size: 1.15rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.picker-back {
+    align-self: flex-start;
+    margin-top: 14px;
+    padding: 6px 2px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.picker-back:hover {
+    color: white;
+}
+
+.picker-empty {
+    margin: 4px 2px;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.picker-disclosure {
+    align-self: flex-start;
+    margin: 2px 0 6px;
+    padding: 4px 2px;
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 0.92rem;
+    cursor: pointer;
+}
+
+.picker-hint {
+    margin: 2px 2px 10px;
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.muscle-target-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0 0 12px;
+    max-height: 230px;
+    overflow-y: auto;
+}
+
+.muscle-target-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 2px;
+}
+
+.muscle-target-name {
+    flex: 1 1 auto;
+    font-size: 0.9rem;
+}
+
+.muscle-target-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.82rem;
+    color: #bbb;
+    cursor: pointer;
+}
+
+.settings-variation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.settings-variation-muscles > summary {
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 0.85rem;
+    margin: 2px 0 0 26px;
+}
+
+.settings-variation-muscles[open] > summary {
+    margin-bottom: 6px;
+}
+
+.program-builder {
+    max-height: 88vh;
+    overflow-y: auto;
+}
+
+.pb-flags {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.pb-weeks {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.pb-week {
+    border: 1px solid #444;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.pb-week-head,
+.pb-day-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.pb-week-name {
+    flex: 1 1 auto;
+    font-weight: bold;
+}
+
+.pb-day {
+    background: var(--btn);
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 8px;
+}
+
+.pb-day-name {
+    flex: 1 1 auto;
+}
+
+.pb-rest {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: #bbb;
+    white-space: nowrap;
+}
+
+.pb-fields,
+.pb-seg {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.pb-fields label,
+.pb-seg label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.72rem;
+    color: #aaa;
+}
+
+.pb-fields input,
+.pb-seg input {
+    width: 54px;
+}
+
+.pb-fields .pb-reps input {
+    width: 84px;
+}
+
+.pb-fields .pb-rpe input {
+    width: 96px;
+}
+
+.pb-seg-label {
+    align-self: center;
+    font-size: 0.78rem;
+    color: var(--accent);
+}
+
+.pb-remove {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid #555;
+    background: var(--btn);
+    color: var(--accent-peak);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.pb-add-inline {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 4px 2px;
+}
+
+.pb-add-week {
+    align-self: flex-start;
+    margin: 12px 0;
+    padding: 8px 14px;
+    border: 1px dashed #555;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+}
+
+.pb-invalid {
+    outline: 2px solid var(--accent-peak);
+    outline-offset: 1px;
+}
+
+input.pb-invalid {
+    border-color: var(--accent-peak);
+    background: rgba(244, 67, 54, 0.14);
+}
+
+/* Pops up like the #toast export confirmation, but pinned to the bottom of the builder
+   <dialog>: the dialog's transform makes it the containing block for this fixed banner,
+   so left/right/bottom are relative to the dialog. pointer-events: none keeps the Create
+   button below it clickable; the banner clears as soon as the user edits a field. */
+.pb-suggestion {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: 14px;
+    z-index: 5;
+    padding: 12px 16px;
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent-peak);
+    border-radius: 10px;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55);
+    font-size: 0.95rem;
+    line-height: 1.45;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: pb-suggestion-in 0.25s ease;
+}
+
+.pb-suggestion strong {
+    color: var(--accent-peak);
+    font-size: 0.88rem;
+}
+
+@keyframes pb-suggestion-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pb-suggestion {
+        animation: none;
+    }
+}
+
+.pb-setup-intro {
+    margin: 0 0 14px;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.pb-setup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.pb-setup-row {
+    display: flex;
+    gap: 12px;
+}
+
+.pb-setup-row label {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.pb-setup-row input {
+    width: 100%;
+}
+
+.pb-back {
+    align-self: flex-start;
+    margin-bottom: 12px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--accent);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.pb-week--deload {
+    border-style: dashed;
+    border-color: var(--blue);
+}
+
+.pb-deload-badge {
+    flex: 0 0 auto;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Ghost panel: a later week's day mirroring Week 1, shown faintly until customized. */
+.pb-ghost {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px dashed #4a4a4a;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.pb-ghost-text {
+    color: #8c8c8c;
+    font-size: 0.82rem;
+    font-style: italic;
+}
+
+.pb-bump {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.pb-bump-btn {
+    padding: 4px 10px;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--accent);
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.pb-bump-btn:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+.pb-bump-chip {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.pb-day-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.pb-auto-rpe {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 2px;
+    font-size: 0.85rem;
+    color: var(--accent);
+}
+
+.pb-auto-rpe small {
+    font-size: 0.62rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.settings-cp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.settings-cp-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: var(--btn);
+}
+
+.settings-cp-name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .custom-dialog-overlay {
     position: fixed;
     inset: 0;
@@ -541,7 +1008,8 @@ body.back-bottom .header .back-btn {
     transition: background 0.2s;
 }
 
-body.back-bottom.subview:not(.nav-bottom) #backFab {
+body.back-bottom.subview:not(.nav-bottom) #backFab,
+body.back-bottom.back-always:not(.nav-bottom) #backFab {
     display: flex;
 }
 
@@ -659,7 +1127,8 @@ body.nav-bottom .bottom-nav {
     display: none;
 }
 
-body.back-bottom.subview .bottom-nav-back {
+body.back-bottom.subview .bottom-nav-back,
+body.back-bottom.back-always .bottom-nav-back {
     display: flex;
 }
 
@@ -672,7 +1141,7 @@ body.nav-bottom #goToTrainingBtn {
     bottom: calc(78px + env(safe-area-inset-bottom, 0px));
 }
 
-/* Today is highlighted so it stays obvious among the icon buttons. */
+/* Today's accent — applied only to flag an unfinished workout (see todayNavShouldHighlight). */
 .icon-btn.nav-accent {
     color: #fff;
     background: var(--blue);

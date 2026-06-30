@@ -58,6 +58,13 @@ export interface ProgramWeek {
 
 export type Program = ProgramWeek[];
 
+export interface CustomProgram {
+  name: string;
+  style: 'build' | 'peak';
+  progressable: boolean;
+  weeks: Program;
+}
+
 export interface NavFabs {
   today: boolean;
   scrollTop: boolean;
@@ -83,6 +90,7 @@ export interface GlobalConfig {
   calendarWeek: number;
   navPosition: 'top' | 'bottom';
   backPosition: 'top' | 'bottom';
+  alwaysShowBack: boolean;
   dialogOffset: number;
   allow25kgPlates: boolean;
   roughLoads: boolean;
@@ -106,6 +114,7 @@ export interface FatigueState {
   week: number;
   muscleMap: Record<string, MuscleMapEntry>;
   tolerance: Record<string, Tolerance>;
+  variationMuscleMap?: Record<string, Record<number, MuscleMapEntry>>;
 }
 
 export interface WarmupPref {
@@ -147,6 +156,7 @@ export interface State {
   variationsDict: Record<string, string[]>;
   allowedPrograms: Record<string, string[]>;
   allowedVariations: Record<string, number[]>;
+  customPrograms: Record<string, CustomProgram>;
   increments: Record<string, number>;
   lifts: Record<string, Lift>;
   logged: Record<string, Record<string, number>>;

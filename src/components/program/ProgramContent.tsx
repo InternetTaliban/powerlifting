@@ -1,9 +1,8 @@
 import { useStore } from '../../store/store';
 import { buildProgramRow, rowTheme, showCompleteButton } from './ProgramRow';
-import { programs } from '../../lib/data';
+import { getProgram } from '../../lib/programLookup';
 import { isBarbellLift } from '../../lib/plates';
 import { openPlatesView, progressCycle, setActiveView } from '../../store/actions';
-import { Icon } from '../Icon';
 
 // The program table for one lift. Used both for the live #programContainer
 // (interactive) and, with interactive=false, for the display-only peek panels
@@ -15,7 +14,7 @@ export function ProgramContent({ lift, interactive = true }: { lift: string; int
   if (!data) {
     return null;
   }
-  const programData = programs[data.program] || [];
+  const programData = getProgram(data.program) || [];
   const unit = state.global.unit;
   const showPlates = isBarbellLift(lift);
   const theme = rowTheme(data.program);
@@ -43,7 +42,12 @@ export function ProgramContent({ lift, interactive = true }: { lift: string; int
                   onClick={interactive ? (e) => { e.stopPropagation(); openPlatesView(wIndex); } : undefined}
                   {...inert}
                 >
-                  <Icon id="icon-plates" size={18} />
+                  <span className="mini-barbell" aria-hidden="true">
+                    <span className="mini-barbell-shaft" />
+                    <span className="mini-barbell-plate mini-barbell-plate-1" />
+                    <span className="mini-barbell-plate mini-barbell-plate-2" />
+                    <span className="mini-barbell-sleeve" />
+                  </span>
                 </button>
               )}
             </header>

@@ -196,7 +196,6 @@
 
 .barbell-plate {
     flex: none;
-    width: 16px;
     margin-right: 3px;
     border-radius: 3px;
     background: #888;
@@ -237,4 +236,44 @@
 .week-plate-btn:hover {
     opacity: 1;
     background: rgba(255, 255, 255, 0.08);
+}
+
+/* A static, decorative mini barbell — a shrunk-down read of the real plate
+   diagram. Plate colours mirror the kg 25/20 swatches in PLATE_COLORS. */
+.mini-barbell {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+}
+
+.mini-barbell-shaft {
+    width: 7px;
+    height: 3px;
+    border-radius: 2px 0 0 2px;
+    background: linear-gradient(#d2d6d9, #878d93);
+}
+
+.mini-barbell-plate {
+    width: 3px;
+    margin-left: 1.5px;
+    border-radius: 1px;
+    box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.25);
+}
+
+.mini-barbell-plate-1 {
+    height: 18px;
+    background: #d32f2f;
+}
+
+.mini-barbell-plate-2 {
+    height: 14px;
+    background: #1565c0;
+}
+
+.mini-barbell-sleeve {
+    width: 4px;
+    height: 3px;
+    margin-left: 1.5px;
+    border-radius: 0 2px 2px 0;
+    background: linear-gradient(#bcc1c6, #7c8288);
 }

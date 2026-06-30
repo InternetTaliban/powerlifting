@@ -13,3 +13,9 @@ export function todayHasIncompleteWorkout(): boolean {
 export function todayFabEligible(): boolean {
   return !!state.global.nav.fabs.today && todayHasIncompleteWorkout();
 }
+
+// The top/bottom nav's Today button is highlighted only to flag an unfinished
+// workout the floating Today's Workout button isn't already advertising.
+export function todayNavShouldHighlight(): boolean {
+  return todayHasIncompleteWorkout() && !todayFabEligible();
+}

@@ -110,7 +110,7 @@ export function ScheduleView() {
 
   const reset = (
     <button
-      className="nav-btn"
+      className="nav-btn nav-btn--danger"
       type="button"
       onClick={() => resetMasterSplit(buildDefaultMasterSplit)}
       title="Reset to default split"

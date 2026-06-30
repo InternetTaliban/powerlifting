@@ -2,14 +2,9 @@ import { useStore, useUI } from '../../store/store';
 import {
   setLiftMax, openModal, toggleRepAdjusters, toggleRoughLoads, setRepModifier,
 } from '../../store/actions';
-import { programsDict } from '../../lib/data';
+import { getProgramName, programHasBackoff } from '../../lib/programLookup';
 import type { CSSProperties } from 'react';
 import type { ControlKey, RepModifiers } from '../../lib/types';
-
-// Backoff Variation only applies to programs that have backoff variations.
-function variationApplies(program: string): boolean {
-  return program.startsWith('building') || program.startsWith('rpe_') || program === 'pullup_peak';
-}
 
 const RANGES: { key: keyof RepModifiers; label: string }[] = [
   { key: 'singles', label: 'Singles' },
@@ -31,7 +26,7 @@ export function LiftControls() {
 
   const wrap = (key: ControlKey, children: React.ReactNode) => {
     let hidden = cfg.layout[key] === 'hidden';
-    if (key === 'variation' && !variationApplies(data.program)) {
+    if (key === 'variation' && !programHasBackoff(data.program)) {
       hidden = true;
     }
     const style: CSSProperties = { order: cfg.order.indexOf(key), display: hidden ? 'none' : 'flex' };
@@ -73,7 +68,7 @@ export function LiftControls() {
               aria-haspopup="dialog"
               onClick={() => openModal('programPicker')}
             >
-              {programsDict[data.program]}
+              {getProgramName(data.program)}
             </button>
           </>
         ))}

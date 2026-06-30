@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useStore } from '../../store/store';
 import { SubViewHeader } from './SubViewHeader';
 import { WorkoutPill } from './WorkoutPill';
-import { weekDays, programs, DAYS_PER_WEEK } from '../../lib/data';
+import { weekDays, DAYS_PER_WEEK } from '../../lib/data';
+import { getProgram } from '../../lib/programLookup';
 import { makeRowId } from '../../lib/calc';
 import { parseRowId } from '../../lib/rowId';
 import { formatDate, formatDisplayDate, getMonday } from '../../util/date';
@@ -224,7 +225,7 @@ function UnassignedPool({ selected, onSelect }: { selected: string | null; onSel
 
   for (const ex of state.exercises) {
     const data = state.lifts[ex];
-    const programData = programs[data.program];
+    const programData = getProgram(data.program);
     const weekData = programData?.[week];
     if (!weekData) {
       continue;
@@ -309,7 +310,7 @@ function WeekGrid({ weekStart, selected, onSelect, onTapDay, onDrop }: {
           if (!p || !state.lifts[p.ex]) {
             continue;
           }
-          const weekData = programs[p.program]?.[p.week];
+          const weekData = getProgram(p.program)?.[p.week];
           const dayObj = weekData?.days[p.day];
           if (!dayObj || dayObj.isRest) {
             continue;

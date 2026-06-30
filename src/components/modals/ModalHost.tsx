@@ -5,6 +5,7 @@ import { WarmupModal } from './WarmupModal';
 import { LogWeightModal } from './LogWeightModal';
 import { LogWorkoutModal } from './LogWorkoutModal';
 import { TodayModal } from './TodayModal';
+import { ProgramBuilderModal } from './ProgramBuilderModal';
 import type { ModalState } from '../../store/store';
 
 function render(modal: ModalState) {
@@ -35,6 +36,7 @@ function render(modal: ModalState) {
         />
       );
     case 'today': return <TodayModal />;
+    case 'programBuilder': return <ProgramBuilderModal editKey={p.editKey as string | undefined} />;
     default: return null;
   }
 }

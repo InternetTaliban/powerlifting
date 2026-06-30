@@ -6,8 +6,11 @@ import { VitePWA } from 'vite-plugin-pwa';
 // The production bundle loads only its own hashed module script (no inline
 // handlers/scripts), so the baseline meta CSP can lock script-src to 'self'.
 // style-src keeps 'unsafe-inline' for the inline style attributes the JSX emits.
+// connect-src additionally allows the PO Box's outbound calls: EmailJS (delivery),
+// ipify (public IP), and the time APIs (trusted clock for the rate limit).
 // Injected at build only — a strict meta CSP would break Vite's dev HMR (eval).
-const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
+const POBOX_CONNECT = 'https://api.emailjs.com https://api.ipify.org https://timeapi.io https://worldtimeapi.org';
+const CSP = `default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self' ${POBOX_CONNECT}; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'`;
 
 function injectCsp(): Plugin {
   return {

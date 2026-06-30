@@ -4,7 +4,7 @@ import type { ImportIssue, State, ViewId } from '../lib/types';
 
 export type ModalType =
   | 'warmup' | 'programPicker' | 'variationPicker' | 'addExercise' | 'editExercise'
-  | 'logWeight' | 'customWorkout' | 'logWorkout' | 'today';
+  | 'logWeight' | 'customWorkout' | 'logWorkout' | 'today' | 'programBuilder';
 
 export interface ModalState { type: ModalType; props?: Record<string, unknown>; }
 export interface ConfirmState {

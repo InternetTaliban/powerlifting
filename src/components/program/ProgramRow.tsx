@@ -1,6 +1,6 @@
 import type { ReactNode, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { state } from '../../lib/state';
-import { programs } from '../../lib/data';
+import { getProgram, programStyle, programProgressable } from '../../lib/programLookup';
 import { makeRowId, resolveRowMax, calculateWeight, roughWeight, getRepModifier } from '../../lib/calc';
 import { toggleRowComplete } from '../../store/actions';
 import { rowClickSuppress } from './rowInteract';
@@ -14,14 +14,11 @@ export interface RowOpts {
 }
 
 export function rowTheme(program: string): 'theme-build' | 'theme-peak' {
-  return (program.startsWith('building') || program === 'rpe_3day'
-    || program === 'rpe_2day' || program === 'pullup_double')
-    ? 'theme-build' : 'theme-peak';
+  return programStyle(program) === 'build' ? 'theme-build' : 'theme-peak';
 }
 
 export function showCompleteButton(program: string): boolean {
-  return program.startsWith('building') || program === 'rpe_3day' || program === 'rpe_2day'
-    || program === 'pullup_double' || program === 'pullup_fighter';
+  return programProgressable(program);
 }
 
 function WrenchIcon() {
@@ -38,7 +35,7 @@ export function buildProgramRow(
   lift: string, program: string, wIndex: number, dIndex: number, opts: RowOpts = {},
 ): ReactNode {
   const liftData = state.lifts[lift];
-  const weekData = programs[program]?.[wIndex];
+  const weekData = getProgram(program)?.[wIndex];
   const day = weekData?.days[dIndex];
   if (!liftData || !day || day.isRest) {
     return null;
@@ -154,7 +151,9 @@ export function buildProgramRow(
       <td>{repsParts}</td>
       <td className="weight-cell">{weightParts}</td>
       <td className="rpe-cell">
-        {String(day.rpe).split('/').map((part, i) => <span key={i} className="rpe-line">{part.trim()}</span>)}
+        {day.rpe
+          ? String(day.rpe).split('/').map((part, i) => <span key={i} className="rpe-line">{part.trim()}</span>)
+          : <span className="rpe-line">—</span>}
       </td>
     </tr>
   );

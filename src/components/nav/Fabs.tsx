@@ -55,8 +55,8 @@ export function Fabs() {
     scrollToActiveWeek();
   };
 
-  const todayFab = todayFabEligible();
   const isSubview = ui.activeView !== 'mainView';
+  const todayFab = todayFabEligible() && !isSubview;
   const backBottom = state.global.backPosition === 'bottom';
   const navBottom = state.global.nav.order.some((k) => state.global.nav.layout[k] === 'bottom');
   const showBackFab = backBottom && isSubview && !navBottom;

@@ -3,15 +3,17 @@ import { useStore } from '../../store/store';
 import { SubViewHeader } from './SubViewHeader';
 import { DesignCard } from './DesignCard';
 import { ExerciseSettingsCard } from './ExerciseSettingsCard';
+import { Icon } from '../Icon';
 import { ensureFatigueState } from '../../lib/fatigue';
 import {
-  toggleBackPosition, setDialogOffset, exportSettings, importStateFromText, factoryReset,
-  updatePeripheralFactor, setActiveView,
+  toggleBackPosition, toggleAlwaysShowBack, setDialogOffset, exportSettings, importStateFromText,
+  factoryReset, resetSettings, updatePeripheralFactor, setActiveView, openModal, deleteCustomProgram,
 } from '../../store/actions';
 
 export function SettingsView() {
   const state = useStore();
   ensureFatigueState();
+  const customPrograms = Object.entries(state.customPrograms || {});
   const fileRef = useRef<HTMLInputElement>(null);
 
   const onImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,10 +50,18 @@ export function SettingsView() {
               {state.global.backPosition === 'bottom' ? 'Bottom' : 'Top'}
             </button>
           </div>
-          <p style={{ color: '#aaa', fontSize: '0.88rem', margin: '10px 0 0' }}>
-            Bottom moves the top-left back button into the thumb zone on sub-pages — a floating button in
-            the lower-left, or the leftmost slot of the bottom bar when the bottom navigation is also on.
-          </p>
+          <div className="input-group input-group--row" style={{ marginTop: 16 }}>
+            <label htmlFor="btnAlwaysShowBack">Always show back button</label>
+            <button
+              id="btnAlwaysShowBack"
+              className="cycle-btn"
+              type="button"
+              aria-pressed={state.global.alwaysShowBack ? 'true' : 'false'}
+              onClick={() => toggleAlwaysShowBack()}
+            >
+              {state.global.alwaysShowBack ? 'On' : 'Off'}
+            </button>
+          </div>
           <div className="prompt-pos-field">
             <span className="prompt-pos-label">Prompt position</span>
             <div className="prompt-pos-track">
@@ -64,17 +74,69 @@ export function SettingsView() {
               <span className="prompt-pos-end">Bottom</span>
             </div>
           </div>
-          <p style={{ color: '#aaa', fontSize: '0.88rem', margin: '10px 0 0' }}>
-            Where pop-up prompts (log weight, Today's Workout…) open. Slide toward Bottom to bring them
-            into your thumb's reach — they always grow to fit their contents rather than scroll.
-          </p>
         </article>
+
+        <details className="settings-advanced" style={{ marginBottom: 20 }}>
+          <summary className="settings-advanced-summary">
+            <span>Exercise &amp; Module Settings</span>
+            <span className="settings-advanced-hint">increments, programs, variations, muscles</span>
+          </summary>
+          <p style={{ color: '#aaa', margin: '14px 0 20px' }}>Expand an exercise to adjust its options.</p>
+          <div id="settingsContainer">
+            <article className="settings-ex-card" style={{ marginBottom: 20 }}>
+              <header className="settings-ex-header"><h4>Fatigue</h4></header>
+              <p style={{ color: '#aaa', fontSize: '0.88rem', margin: '0 0 6px' }}>
+                Secondary-muscle tax per working set (1 = full, 0.5 = half).
+              </p>
+              <div className="fatigue-settings-field">
+                <label htmlFor="peripheralFactorInput">Peripheral Fatigue Factor:</label>
+                <input
+                  type="number" inputMode="decimal" id="peripheralFactorInput" min="0" max="1" step="0.05"
+                  defaultValue={state.fatigue.peripheralFactor} key={state.fatigue.peripheralFactor}
+                  onChange={(e) => updatePeripheralFactor(e.target.value)}
+                />
+              </div>
+              <button className="btn-progress" type="button" onClick={() => setActiveView('fatigueView')}>
+                Open Fatigue Manager
+              </button>
+            </article>
+            <article className="settings-ex-card" style={{ marginBottom: 20 }}>
+              <header className="settings-ex-header"><h4>Custom Programs</h4></header>
+              <p style={{ color: '#aaa', fontSize: '0.88rem', margin: '0 0 12px' }}>
+                Build your own programs and use them on any lift.
+              </p>
+              {customPrograms.length === 0 ? (
+                <p style={{ color: '#888', margin: '0 0 12px' }}>No custom programs yet.</p>
+              ) : (
+                <div className="settings-cp-list">
+                  {customPrograms.map(([key, cp]) => (
+                    <div className="settings-cp-row" key={key}>
+                      <span className="settings-cp-name">{cp.name}</span>
+                      <div className="settings-actions">
+                        <button
+                          className="icon-btn" type="button" title="Edit"
+                          onClick={() => openModal('programBuilder', { editKey: key })}
+                        ><Icon id="icon-edit" size={18} /></button>
+                        <button
+                          className="icon-btn icon-btn--danger" type="button" title="Delete"
+                          onClick={() => deleteCustomProgram(key)}
+                        ><Icon id="icon-trash" size={18} /></button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <button className="btn-progress" type="button" onClick={() => openModal('programBuilder')}>
+                Create Program
+              </button>
+            </article>
+            {state.exercises.map((ex) => <ExerciseSettingsCard key={ex} ex={ex} />)}
+          </div>
+        </details>
 
         <article className="settings-ex-card" style={{ marginBottom: 20 }}>
           <header className="settings-ex-header"><h4>Data</h4></header>
-          <p style={{ color: '#aaa', fontSize: '0.88rem', margin: '0 0 14px' }}>
-            Back up your PRs and settings to a file, or restore from a previous export.
-          </p>
+          <p style={{ color: '#aaa', fontSize: '0.88rem', margin: '0 0 14px' }}>Back up or restore your data.</p>
           <div style={{ display: 'flex', gap: 10 }}>
             <button
               className="btn-progress"
@@ -89,48 +151,10 @@ export function SettingsView() {
           <input type="file" ref={fileRef} accept=".json" style={{ display: 'none' }} onChange={onImportFile} />
         </article>
 
-        <details className="settings-advanced">
-          <summary className="settings-advanced-summary">
-            <span>Exercise &amp; Module Settings</span>
-            <span className="settings-advanced-hint">increments, programs, variations, muscles</span>
-          </summary>
-          <p style={{ color: '#aaa', margin: '14px 0 20px' }}>
-            Advanced per-lift options. Expand an exercise to adjust its cycle increment, which programs
-            &amp; variations appear in the cycler, and its muscle mapping.
-          </p>
-          <div id="settingsContainer">
-            <article className="settings-ex-card" style={{ marginBottom: 20 }}>
-              <header className="settings-ex-header"><h4>Fatigue</h4></header>
-              <p style={{ color: '#aaa', fontSize: '0.88rem', margin: '0 0 6px' }}>
-                How much a working set taxes the secondary muscles a lift trains (e.g. triceps and
-                shoulders on bench). 1 = full set, 0.5 = half.
-              </p>
-              <div className="fatigue-settings-field">
-                <label htmlFor="peripheralFactorInput">Peripheral Fatigue Factor:</label>
-                <input
-                  type="number" inputMode="decimal" id="peripheralFactorInput" min="0" max="1" step="0.05"
-                  defaultValue={state.fatigue.peripheralFactor} key={state.fatigue.peripheralFactor}
-                  onChange={(e) => updatePeripheralFactor(e.target.value)}
-                />
-              </div>
-              <button className="btn-progress" type="button" onClick={() => setActiveView('fatigueView')}>
-                Open Fatigue Manager
-              </button>
-            </article>
-            {state.exercises.map((ex) => <ExerciseSettingsCard key={ex} ex={ex} />)}
-          </div>
-        </details>
-
-        <article className="settings-ex-card danger-zone" style={{ marginBottom: 20 }}>
-          <header className="settings-ex-header"><h4>Factory reset</h4></header>
-          <p style={{ color: '#aaa', fontSize: '0.88rem', margin: '0 0 14px' }}>
-            Erases everything — your lifts, 1RMs, logged weights, PRs, planner, and all settings — and
-            restores the app to a fresh install. This cannot be undone.
-          </p>
-          <button type="button" className="btn-factory-reset" onClick={() => factoryReset()}>
-            Reset everything to defaults
-          </button>
-        </article>
+        <div className="settings-reset-actions">
+          <button type="button" className="btn-factory-reset" onClick={() => resetSettings()}>Reset settings</button>
+          <button type="button" className="btn-factory-reset" onClick={() => factoryReset()}>Factory reset</button>
+        </div>
       </div>
     </>
   );

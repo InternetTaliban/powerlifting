@@ -7,7 +7,8 @@ import { DEFAULT_PERIPHERAL_FACTOR, defaultMuscleMap, defaultTolerance } from '.
 export const defaultState: State = {
   global: {
     unit: 'kg', rounding: 'exact', calendarWeek: 0, navPosition: 'top', backPosition: 'bottom',
-    dialogOffset: DEFAULT_DIALOG_OFFSET, allow25kgPlates: true, roughLoads: false, showLoadsToggle: false,
+    alwaysShowBack: false, dialogOffset: DEFAULT_DIALOG_OFFSET, allow25kgPlates: true, roughLoads: false,
+    showLoadsToggle: false,
     nav: defaultNavConfig(), controls: defaultControlsConfig(),
   },
   activeLift: 'bench',
@@ -30,6 +31,7 @@ export const defaultState: State = {
     pullup: [...pullupPrograms],
   },
   allowedVariations: { squat: [0, 1, 2], bench: [0, 1], deadlift: [0, 1], ohp: [0, 1, 2], pullup: [0, 1, 2, 3] },
+  customPrograms: {},
   increments: { squat: 2.5, bench: 2.5, deadlift: 2.5, ohp: 2.5, pullup: 1.25 },
   lifts: {
     squat: { max: 140, program: 'rpe_2day', variation: 1, block: 0 },

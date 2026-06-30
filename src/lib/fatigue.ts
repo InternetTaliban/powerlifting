@@ -1,9 +1,10 @@
 import { state } from './state';
 import {
-  programs, muscleGroups, defaultTolerance, defaultMuscleMap,
+  muscleGroups, defaultTolerance, defaultMuscleMap,
   DEFAULT_PERIPHERAL_FACTOR, NEAR_MRV_FRACTION,
 } from './data';
-import type { ProgramDay } from './types';
+import { getProgram } from './programLookup';
+import type { MuscleMapEntry, ProgramDay } from './types';
 
 export type ZoneKey = 'none' | 'under' | 'optimal' | 'high' | 'over';
 
@@ -19,6 +20,9 @@ export function ensureFatigueState(): void {
   }
   if (!state.fatigue.muscleMap) {
     state.fatigue.muscleMap = {};
+  }
+  if (!state.fatigue.variationMuscleMap) {
+    state.fatigue.variationMuscleMap = {};
   }
   if (!state.fatigue.tolerance) {
     state.fatigue.tolerance = {};
@@ -41,12 +45,20 @@ export function ensureFatigueState(): void {
   }
 }
 
-export function workingSetsForDay(day: ProgramDay | null | undefined): number {
+export function mainSetsForDay(day: ProgramDay | null | undefined): number {
   if (!day || day.isRest) {
     return 0;
   }
 
-  let sets = Number(day.sets) || 0;
+  return Number(day.sets) || 0;
+}
+
+export function backoffSetsForDay(day: ProgramDay | null | undefined): number {
+  if (!day || day.isRest) {
+    return 0;
+  }
+
+  let sets = 0;
   for (const segment of [day.backoff, day.backoff2, day.backoff3]) {
     if (segment) {
       sets += Number(segment.sets) || 0;
@@ -56,19 +68,37 @@ export function workingSetsForDay(day: ProgramDay | null | undefined): number {
   return sets;
 }
 
-export function weeklySetsForExercise(ex: string, weekIdx: number): number {
+export function workingSetsForDay(day: ProgramDay | null | undefined): number {
+  return mainSetsForDay(day) + backoffSetsForDay(day);
+}
+
+export interface SetSplit { main: number; backoff: number; }
+
+export function weeklySplitForExercise(ex: string, weekIdx: number): SetSplit {
   const lift = state.lifts[ex];
   if (!lift) {
-    return 0;
+    return { main: 0, backoff: 0 };
   }
 
-  const program = programs[lift.program];
+  const program = getProgram(lift.program);
   if (!program || !program.length) {
-    return 0;
+    return { main: 0, backoff: 0 };
   }
 
   const week = Math.min(Math.max(0, weekIdx), program.length - 1);
-  return (program[week].days || []).reduce((sum, day) => sum + workingSetsForDay(day), 0);
+  let main = 0;
+  let backoff = 0;
+  for (const day of program[week].days || []) {
+    main += mainSetsForDay(day);
+    backoff += backoffSetsForDay(day);
+  }
+
+  return { main, backoff };
+}
+
+export function weeklySetsForExercise(ex: string, weekIdx: number): number {
+  const split = weeklySplitForExercise(ex, weekIdx);
+  return split.main + split.backoff;
 }
 
 export interface MuscleVolume {
@@ -90,15 +120,33 @@ export function computeMuscleVolume(weekIdx: number): MuscleVolume {
     contributors[muscle].push({ ex, sets });
   };
 
+  const addForMap = (map: MuscleMapEntry, ex: string, sets: number) => {
+    (map.primary || []).forEach((muscle) => add(muscle, ex, sets));
+    (map.secondary || []).forEach((muscle) => add(muscle, ex, sets * peripheralFactor));
+  };
+
   for (const ex of state.exercises) {
-    const sets = weeklySetsForExercise(ex, weekIdx);
-    if (sets <= 0) {
+    const { main, backoff } = weeklySplitForExercise(ex, weekIdx);
+    if (main <= 0 && backoff <= 0) {
       continue;
     }
 
-    const map = state.fatigue.muscleMap[ex] || { primary: [], secondary: [] };
-    (map.primary || []).forEach((muscle) => add(muscle, ex, sets));
-    (map.secondary || []).forEach((muscle) => add(muscle, ex, sets * peripheralFactor));
+    const exMap = state.fatigue.muscleMap[ex] || { primary: [], secondary: [] };
+    // Backoff sets follow the active variation's own muscle map when it has one;
+    // otherwise everything counts toward the exercise's muscles (legacy behaviour).
+    const variation = state.lifts[ex]?.variation;
+    const varMap = (backoff > 0 && variation != null)
+      ? state.fatigue.variationMuscleMap?.[ex]?.[variation]
+      : undefined;
+
+    if (varMap) {
+      if (main > 0) {
+        addForMap(exMap, ex, main);
+      }
+      addForMap(varMap, ex, backoff);
+    } else {
+      addForMap(exMap, ex, main + backoff);
+    }
   }
 
   return { totals, contributors };

@@ -1,4 +1,5 @@
 import { allPrograms } from './data';
+import { customProgramKeys } from './programLookup';
 
 export interface ParsedRowId {
   ex: string;
@@ -16,7 +17,15 @@ export function parseRowId(rowId: string): ParsedRowId | null {
   }
 
   const head = match[1];
-  const program = allPrograms.find((candidate) => head === candidate || head.endsWith('-' + candidate));
+  // Custom program keys join the built-in list; pick the longest match so a key
+  // that is a suffix of another can't be misattributed.
+  let program: string | undefined;
+  for (const candidate of [...allPrograms, ...customProgramKeys()]) {
+    if ((head === candidate || head.endsWith('-' + candidate))
+      && (program === undefined || candidate.length > program.length)) {
+      program = candidate;
+    }
+  }
   if (!program) {
     return null;
   }

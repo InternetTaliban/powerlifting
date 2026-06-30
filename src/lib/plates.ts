@@ -32,20 +32,26 @@ export const PLATE_COLORS: Record<Unit, Record<number, PlateColor>> = {
 };
 
 const PLATE_MAX_H = 88;
-const PLATE_MIN_H = 36;
+const PLATE_BASE_W = 16;
+
+// Plate bar height as a fraction of the max, by denomination rank (largest first).
+const PLATE_HEIGHT_RATIOS = [1, 1, 0.89, 0.72, 0.51, 0.42, 0.36];
 
 const PLATE_EPSILON = 0.001;
 
 export function plateHeight(denom: number, unit: Unit): number {
   const denoms = PLATE_DENOMS[unit] || PLATE_DENOMS.kg;
-  const max = denoms[0];
-  const min = denoms[denoms.length - 1];
-  if (max === min) {
-    return PLATE_MAX_H;
-  }
+  const rank = denoms.indexOf(denom);
+  const ratio = PLATE_HEIGHT_RATIOS[Math.min(Math.max(rank, 0), PLATE_HEIGHT_RATIOS.length - 1)];
+  return Math.round(ratio * PLATE_MAX_H);
+}
 
-  const ratio = (denom - min) / (max - min);
-  return Math.round(PLATE_MIN_H + ratio * (PLATE_MAX_H - PLATE_MIN_H));
+// Plate thickness scales by denomination: the 25 kg is the full base width and the
+// rest a tuned fraction of it. Keyed by value, so lbs reuses the shared 10/5/2.5.
+const PLATE_WIDTH_SCALE: Record<number, number> = { 20: 0.86, 15: 0.67, 10: 0.6, 5: 0.45, 2.5: 0.33, 1.25: 0.31 };
+
+export function plateWidth(denom: number): number {
+  return +(PLATE_BASE_W * (PLATE_WIDTH_SCALE[denom] ?? 1)).toFixed(2);
 }
 
 export interface PlateOpts { allow25?: boolean; }

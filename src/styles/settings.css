@@ -116,6 +116,13 @@
     text-transform: none;
 }
 
+/* The design card runs denser than the others, so give its content slightly more
+   width by trimming the side padding — also keeps the action buttons on one row. */
+.design-card {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .design-list {
     display: flex;
     flex-direction: column;
@@ -126,7 +133,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px 14px;
+    gap: 10px 8px;
     flex-wrap: wrap;
     background: var(--card);
     border: 1px solid var(--border);
@@ -221,6 +228,26 @@
 .design-seg-opt.selected {
     background: var(--blue);
     color: white;
+}
+
+/* Collapsed segment shows only the chosen placement — read-only, no cursor hint. */
+.design-seg-collapsed .design-seg-opt {
+    cursor: default;
+}
+
+/* Per-row chevron that expands the full name / collapses the segment. */
+.icon-btn.design-expand {
+    min-width: 0;
+    min-height: 0;
+    width: 22px;
+    height: 32px;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.icon-btn.design-expand svg {
+    width: 16px;
+    height: 16px;
 }
 
 .design-actions {
@@ -410,13 +437,29 @@
 
 .pobox-form {
     padding: 22px;
-
 }
 
-.pobox-form[disabled] input,
-.pobox-form[disabled] textarea {
+.pobox-fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+}
+
+.pobox-fieldset[disabled] input,
+.pobox-fieldset[disabled] textarea {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* Honeypot — off-screen and out of the tab order, so only bots ever fill it. */
+.pobox-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .pobox-input-group {
@@ -453,6 +496,27 @@ textarea {
     color: var(--text-muted);
     margin: 0;
     font-style: italic;
+}
+
+.pobox-status {
+    text-align: center;
+    font-size: 0.9rem;
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+}
+
+.pobox-status--ok {
+    color: #7dd39b;
+    background: rgba(46, 125, 50, 0.14);
+    border-color: rgba(46, 125, 50, 0.5);
+}
+
+.pobox-status--error {
+    color: #ef9a9a;
+    background: rgba(211, 47, 47, 0.12);
+    border-color: rgba(211, 47, 47, 0.45);
 }
 
 .pobox-submit {
@@ -645,6 +709,13 @@ textarea {
 
 .prompt-pos-end:last-child {
     text-align: right;
+}
+
+.settings-reset-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
 .btn-factory-reset {

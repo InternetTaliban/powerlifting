@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useStore } from '../../store/store';
 import { NAV_ITEMS, CONTROL_ITEMS } from '../../lib/nav';
 import {
@@ -42,13 +43,15 @@ export function DesignCard() {
   const ctrl = state.global.controls;
   const hiddenCount = cfg.order.filter((k) => cfg.layout[k] === 'hidden').length;
 
+  // Per-row toggle: collapse the placement segment to just the chosen option and
+  // reveal the button's full name in the freed space (see the chevron below).
+  const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
+  const toggleExpanded = (key: string) => setExpandedRows((prev) => ({ ...prev, [key]: !prev[key] }));
+
   return (
     <article className="settings-ex-card design-card" style={{ marginBottom: 20 }}>
       <header className="settings-ex-header"><h4>Design</h4></header>
-      <p className="design-intro">
-        Customize your navigation. Send each button to the top bar or the bottom bar, hide the ones you
-        don't use, and reorder them with the arrows. Settings can be moved but never hidden.
-      </p>
+      <p className="design-intro">Send buttons to the top or bottom bar, hide or reorder them.</p>
 
       <div id="designButtonsList" className="design-list">
         {(cfg.order as NavKey[]).map((key, idx) => {
@@ -56,6 +59,8 @@ export function DesignCard() {
           const locs: [NavLocation, string][] = item.essential
             ? [['top', 'Top'], ['bottom', 'Bottom']]
             : [['top', 'Top'], ['bottom', 'Bottom'], ['hidden', 'Hidden']];
+          const expanded = !!expandedRows[key];
+          const segLocs = expanded ? locs.filter(([loc]) => cfg.layout[key] === loc) : locs;
           return (
             <div className="design-row" key={key}>
               <div className="design-row-main">
@@ -65,22 +70,36 @@ export function DesignCard() {
                   total={cfg.order.length}
                   move={(dir) => moveNavButton(key, dir)}
                 />
-                <span className="design-row-icon"><Icon id={item.icon} size={20} /></span>
-                <span className="design-row-label">{item.label}</span>
+                {expanded && <span className="design-row-icon"><Icon id={item.icon} size={20} /></span>}
+                <span className="design-row-label">{expanded ? item.label : item.short}</span>
               </div>
-              <div className="design-seg" role="group" aria-label={`Placement for ${item.label}`}>
-                {locs.map(([loc, text]) => (
+              <div
+                className={'design-seg' + (expanded ? ' design-seg-collapsed' : '')}
+                role="group"
+                aria-label={`Placement for ${item.label}`}
+              >
+                {segLocs.map(([loc, text]) => (
                   <button
                     key={loc}
                     type="button"
                     className={'design-seg-opt' + (cfg.layout[key] === loc ? ' selected' : '')}
                     aria-current={cfg.layout[key] === loc ? 'true' : undefined}
-                    onClick={() => setNavLayout(key, loc)}
+                    onClick={expanded ? undefined : () => setNavLayout(key, loc)}
                   >
                     {text}
                   </button>
                 ))}
               </div>
+              <button
+                type="button"
+                className="icon-btn design-expand"
+                aria-expanded={expanded}
+                aria-label={expanded ? `Show ${item.short} short name and all placements` : `Show ${item.short} full name`}
+                title={expanded ? 'Short name & all placements' : 'Full name'}
+                onClick={() => toggleExpanded(key)}
+              >
+                <Icon id={expanded ? 'icon-chevron-left' : 'icon-chevron-right'} size={18} />
+              </button>
             </div>
           );
         })}
@@ -150,10 +169,7 @@ export function DesignCard() {
             {cfg.fabs.today ? 'On' : 'Off'}
           </button>
         </div>
-        <p className="design-hint">
-          Shows Today's Workout as a button in the middle of the bottom while you still have planner
-          workouts left for the day. Once they're all done it moves back to the navigation.
-        </p>
+        <p className="design-hint">A floating shortcut while you still have workouts left today.</p>
         <div className="input-group input-group--row" style={{ marginTop: 14 }}>
           <label htmlFor="btnFabScrollTop">Scroll-to-top button</label>
           <button
@@ -185,9 +201,7 @@ export function DesignCard() {
           <span>Lift controls</span>
           <span className="design-subsection-hint">order &amp; hide the main-page controls</span>
         </summary>
-        <p className="design-hint">
-          Reorder the controls under the exercise tabs on the main page, or hide the ones you don't use.
-        </p>
+        <p className="design-hint">Reorder or hide the controls under the exercise tabs.</p>
         <div id="controlsDesignList" className="design-list" style={{ marginTop: 10 }}>
           {ctrl.order.map((key, idx) => {
             const item = CONTROL_ITEMS[key];
@@ -227,7 +241,7 @@ export function DesignCard() {
           className="design-action-btn design-action-primary"
           onClick={() => applyThumbReachPreset()}
         >
-          Thumb reach (all to bottom)
+          Thumb reach
         </button>
         <button
           type="button"

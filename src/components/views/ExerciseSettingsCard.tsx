@@ -1,9 +1,12 @@
 import { useStore } from '../../store/store';
-import { programsDict, pullupPrograms, regularPrograms, muscleGroups, muscleGroupsDict } from '../../lib/data';
+import { pullupPrograms, regularPrograms, muscleGroups, muscleGroupsDict } from '../../lib/data';
+import { getProgramName } from '../../lib/programLookup';
 import {
   updateIncrement, toggleProgramAccess, toggleVariationAccess, toggleMuscle, deleteExercise, openModal,
+  setVariationMuscle,
 } from '../../store/actions';
 import { Icon } from '../Icon';
+import { MuscleTargetEditor } from './MuscleTargetEditor';
 
 export function ExerciseSettingsCard({ ex }: { ex: string }) {
   const state = useStore();
@@ -62,23 +65,38 @@ export function ExerciseSettingsCard({ ex }: { ex: string }) {
               checked={!!state.allowedPrograms[ex]?.includes(progKey)}
               onChange={(e) => toggleProgramAccess(ex, progKey, e.target.checked)}
             />
-            {' ' + programsDict[progKey]}
+            {' ' + getProgramName(progKey)}
           </label>
         ))}
       </div>
 
       <h5>Variations</h5>
-      <div className="checkbox-group">
-        {state.variationsDict[ex].map((varName, idx) => (
-          <label className="checkbox-item" key={idx}>
-            <input
-              type="checkbox"
-              checked={state.allowedVariations[ex].includes(idx)}
-              onChange={(e) => toggleVariationAccess(ex, idx, e.target.checked)}
-            />
-            {' ' + varName}
-          </label>
-        ))}
+      <div className="settings-variation-list">
+        {state.variationsDict[ex].map((varName, idx) => {
+          const vmap = state.fatigue.variationMuscleMap?.[ex]?.[idx] || { primary: [], secondary: [] };
+          return (
+            <div className="settings-variation" key={idx}>
+              <label className="checkbox-item">
+                <input
+                  type="checkbox"
+                  checked={state.allowedVariations[ex].includes(idx)}
+                  onChange={(e) => toggleVariationAccess(ex, idx, e.target.checked)}
+                />
+                {' ' + varName}
+              </label>
+              <details className="settings-variation-muscles">
+                <summary>Targeted muscles</summary>
+                <p className="picker-hint">
+                  Backoff sets for this variation count toward these muscles (otherwise the exercise's own).
+                </p>
+                <MuscleTargetEditor
+                  map={vmap}
+                  onToggle={(muscle, role, enabled) => setVariationMuscle(ex, idx, muscle, role, enabled)}
+                />
+              </details>
+            </div>
+          );
+        })}
       </div>
 
       {([

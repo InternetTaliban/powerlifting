@@ -3,11 +3,11 @@ import { useStore, useUI } from '../../store/store';
 import { commit } from '../../store/store';
 import { getState } from '../../lib/state';
 import { SubViewHeader } from './SubViewHeader';
-import { programs } from '../../lib/data';
+import { getProgram } from '../../lib/programLookup';
 import { calculateWeight, makeRowId } from '../../lib/calc';
 import {
   BAR_WEIGHT, PLATE_COLORS, isBarbellLift, platesRounded, effectiveDenoms,
-  plateHeight, formatPlateNum,
+  plateHeight, plateWidth, formatPlateNum,
 } from '../../lib/plates';
 import type { PlateOpts, PlatesResult } from '../../lib/plates';
 import type { ProgramDay, ProgramSegment, Unit } from '../../lib/types';
@@ -27,7 +27,7 @@ function Barbell({ res, unit }: { res: PlatesResult; unit: Unit }) {
         <span
           key={i}
           className="barbell-plate"
-          style={{ height: plateHeight(d, unit) + 'px', background: colors[d]?.bg }}
+          style={{ height: plateHeight(d, unit) + 'px', width: plateWidth(d) + 'px', background: colors[d]?.bg }}
           title={`${formatPlateNum(d)} ${unit}`}
         />
       ))}
@@ -129,7 +129,7 @@ export function PlatesView() {
     );
   }
 
-  const programData = programs[data.program];
+  const programData = getProgram(data.program);
   const weekData = programData && programData[ui.platesWeekIndex];
   const unit = state.global.unit;
   const max = data.max;

@@ -137,3 +137,39 @@ test('ensureFatigueState: repairs an invalid peripheral factor', () => {
   ensureFatigueState();
   assert.equal(getState().fatigue.peripheralFactor, 0.5);
 });
+
+test('computeMuscleVolume: backoff sets follow the active variation muscle map', () => {
+  setLoose({
+    exercises: ['bench'],
+    lifts: { bench: { program: 'building', variation: 1 } },
+    fatigue: {
+      peripheralFactor: 0.5,
+      week: 0,
+      muscleMap: { bench: { primary: ['chest'], secondary: [] } },
+      variationMuscleMap: { bench: { 1: { primary: ['triceps'], secondary: [] } } },
+      tolerance: {},
+    },
+  });
+
+  const { totals } = computeMuscleVolume(0);
+  // building week 0: main sets 4+3+1 = 8 → chest; backoff sets 3 → triceps.
+  assert.equal(totals.chest, 8);
+  assert.equal(totals.triceps, 3);
+});
+
+test('computeMuscleVolume: backoff falls back to exercise muscles without a variation map', () => {
+  setLoose({
+    exercises: ['bench'],
+    lifts: { bench: { program: 'building', variation: 0 } },
+    fatigue: {
+      peripheralFactor: 0.5,
+      week: 0,
+      muscleMap: { bench: { primary: ['chest'], secondary: [] } },
+      tolerance: {},
+    },
+  });
+
+  const { totals } = computeMuscleVolume(0);
+  // No variation map → all 11 sets (8 main + 3 backoff) count toward chest.
+  assert.equal(totals.chest, 11);
+});
